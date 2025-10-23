@@ -1,24 +1,31 @@
 #!/usr/bin/python3
-"""Print titles of first 10 hot posts for a given subreddit."""
+"""Print titles of the first 10 hot posts for a given subreddit."""
 
 import requests
 
 
 def top_ten(subreddit):
     """Print the top 10 hot post titles for a subreddit."""
-    if subreddit is None or type(subreddit) is not str:
+    if subreddit is None or not isinstance(subreddit, str):
         print(None)
         return
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
-    headers = {"User-Agent": "ALU-Reddit-Task/1.0"}
+
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {"User-Agent": "ALU-Reddit-Task/0.1"}
+    params = {"limit": 10}
+
     try:
-        r = requests.get(url, headers=headers,
-                         allow_redirects=False, timeout=10)
-        if r.status_code != 200:
+        response = requests.get(
+            url, headers=headers, params=params,
+            allow_redirects=False, timeout=10
+        )
+        if response.status_code != 200:
             print(None)
             return
-        posts = r.json().get("data", {}).get("children", [])
+
+        posts = response.json().get("data", {}).get("children", [])
         for post in posts:
-            print(post.get("data", {}).get("title"))
-    except requests.RequestException:
+            title = post.get("data", {}).get("title")
+            print(title)
+    except Exception:
         print(None)
